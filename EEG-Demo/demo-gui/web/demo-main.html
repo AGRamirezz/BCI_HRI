@@ -1,0 +1,148 @@
+<!-- Set up HTML structure -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EEG Robot Control Demo</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="endDemoButtonWrapper">
+        <a id="endDemoButton" href="#" class="submit button-style">Exit Demo</a>
+    </div>
+    <section class="wellcome_area clearfix" id="home">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12 col-md">
+                    <div class="wellcome-heading">
+                        <h2>EEG Robot Control Demo</h2>
+                        <p> Record snippets of brain data & watch the robot dog move!</p>
+                    </div>
+                    <div class="get-start-area">
+                        <input id="startDemoButton" type="button" class="submit" value="Start Demo">
+                        <div id="nextStep" style="display: none;"> 
+                            <p><span class="line1"> Streaming live brain data. </span><span class="line2"> Close the data window & press "Start Recording" 
+                                when you're ready to record data.</span></p>
+                            <input id="startrecordButton" type="button" class="submit" value="Start Recording">
+                            <div id="nextStep2" style="display: none;">
+                                <!-- <p id="recordingMessage" style="display: none;"> Recording brain data & making predictions... </p> -->
+                                <p id="recordingMessage" style="display: none;"></p>
+                                <img id="randomImage"/> 
+                            <div id="nextStep3" style = "display: none;">
+                                <p id="prediction"> Now watch the robot move!</p>
+                            </div>
+                                
+                                
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Set up Javadcript code-->
+    <script src="/eel.js"></script>
+    <script>
+        // These variables are only relevant when we want to control the order that the arrows a person will train on are presented
+        var images = ['img/arrow_pictures/left.png','img/arrow_pictures/down.png'];
+        var image_idx = 0;
+
+        // Create variables for HTML elements above
+        const demoButton = document.getElementById('startDemoButton')
+        const enddemoButton = document.getElementById('endDemoButton')
+        const nextStepContainer = document.getElementById('nextStep')
+        const recordButton = document.getElementById('startrecordButton')
+        const nextStepContainer2 = document.getElementById('nextStep2')
+        const predictionOutput = document.getElementById('prediction');
+
+        // When demo button is pressed, the socket gets initiated & matlab animation starts to display eeg signals
+        demoButton.addEventListener('click', function() {
+            demoButton.style.display = 'none';
+            nextStepContainer.style.display = 'block';
+            eel.init_socket()(); // comment this out when you are not testing with robot/robot computer in the loop
+            document.querySelector('.wellcome-heading > p').style.display = 'none'; 
+
+            eel.start_animation()();
+        });
+
+        // This enables the iterative process of recording eeg data stream & making a prediction
+        async function startRecordingCycle() {
+            recordButton.style.display = 'none';
+            document.getElementById("recordingMessage").textContent= "Focus on the highlighted arrow. Recording brain data & making predictions...";
+            document.getElementById("recordingMessage").innerHTML = "Focus on the highlighted arrow.<br><br>Recording brain data & making predictions...";
+            document.getElementById("recordingMessage").style.display = 'block'; 
+            displayRandomImage();
+            nextStepContainer2.style.display = 'block';
+            document.querySelector('#nextStep > p').style.display = 'none';
+
+            setTimeout(async () => {
+                try {
+                    const [prediction, arrow_image] = await eel.predict_EEG()();
+                    // predictionOutput.textContent = `Prediction Probability : ${prediction}`; 
+                    document.getElementById("randomImage").src = arrow_image;
+                    // document.getElementById("recordingMessage").style.display = 'none';
+                    document.getElementById("recordingMessage").textContent = `Model prediction with probability: ${prediction}`;
+                    document.getElementById("recordingMessage").innerHTML = "Model prediction with probability: <b>" + prediction + "</b>";
+                    document.getElementById('nextStep3').style.display = 'block'; 
+
+
+                    // After prediction, re-enable the recording button:
+                    setTimeout(() => { 
+                        recordButton.style.display = 'block'; 
+                        nextStepContainer2.style.display = 'none'; 
+                        document.getElementById('nextStep3').style.display = 'none';
+                        // document.getElementById("recordingMessage").style.display = 'none';
+                        document.querySelector('#nextStep > p').style.display = 'block';
+                    }, 6000); // Adjust delay as needed
+
+                } catch (error) {
+                    console.error("Error during prediction:", error);
+                }
+            },6000);
+        }
+        
+        // Here we call the function above to start the cycle of recording data and making a prediction
+        recordButton.addEventListener('click', function(){
+            startRecordingCycle()();
+
+        })
+         
+        // When the exit demo is pressed, the demo ends cleanly with the socket closing, which is important! Not closing a socket appropriately can lead to communication issues btwn the client-server.
+        enddemoButton.addEventListener('click', async function(event) {
+            event.preventDefault();
+
+            try {
+                await eel.close_socket()(); 
+                console.log("Socket closed successfully!");
+                // Redirect after successful socket closure
+                window.location.href = "demo-ended.html"; // Or a suitable message page
+            } catch (error) {
+                console.error("Error closing socket:", error);
+                // Handle error appropriately (e.g., display a message to the user)
+            }
+        });
+
+        // This function picks images of the arrows randomly; ideally if the model works well you would want to use this.
+        // function getRandomgImage() {
+        //     var images = ['img/arrow_pictures/down.png','img/arrow_pictures/up.png', 'img/arrow_pictures/left.png', 'img/arrow_pictures/right.png'];
+        //     // var images = ['img/arrow_pictures/left.png','img/arrow_pictures/down.png'];
+        //     var image = images[Math.floor(Math.random()*images.length)];
+        //     return image;
+        // }
+
+        // This function displays the left arrow first, and then the down arrow, making the demo more predictable.
+        function getRandomgImage() {
+            var image = images[image_idx];
+            image_idx = (image_idx + 1);
+            return image
+        }
+
+        function displayRandomImage(){
+            var htmlImage = document.getElementById("randomImage");
+            htmlImage.src = getRandomgImage();
+
+        }
+    </script>
+</body>
+</html>
+
+    
