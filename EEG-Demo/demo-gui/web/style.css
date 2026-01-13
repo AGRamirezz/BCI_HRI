@@ -1,0 +1,131 @@
+/* This is where the magic formatting happens for the gui! All these "variables" correspond to elements of the HTML. Feel free to get creative, it's fun! */
+
+@import url('https://fonts.googleapis.com/css?family=Cabin:400,500,700|Montserrat:400,500,700');
+
+body {
+  font-family: 'Cabin', sans-serif;
+  /* font-family: "Lucida Console", Courier, monospace; */
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0; 
+}
+
+.container { 
+  text-align: center;
+}
+
+
+h2 {
+  font-size: 5em;
+  color:  #7500c0; 
+  margin-bottom: 0.5em;
+  font-weight: bold;   /* Make it bold */
+
+}
+
+p {
+  font-size: 2.2em;
+  color: #000000;
+  margin-bottom: 1em;
+}
+
+
+.get-start-area input[type="button"] {
+  background-color: #7500c0; /* Using your existing color */
+  color: #fff;
+  font-size: 1.6em;
+  padding: 1em 2em; 
+  border: none;
+  border-radius: 5px; 
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0 10px; /* Add spacing between buttons */
+}
+
+.get-start-area input[type="button"]:hover {
+  background-color: #7500c0; /* Darker shade on hover */
+}
+
+
+#nextStep, #nextStep3 {
+    margin-top: 20px;
+  }
+
+
+#prediction {  
+    font-size: 2.5em; 
+    color: #000000;; 
+    margin-top: 1em; 
+    margin-bottom: 2em; 
+    font-weight: bold;  
+}
+
+#randomImage { 
+    margin-top: 3em;
+    margin-bottom: 0.5em; 
+}
+
+
+#startrecordButton {
+    display: block; 
+    margin: 2em auto; 
+}
+
+
+#nextStep .line1 {
+    display: block; 
+    margin-bottom: 0.75em;
+  }
+  
+  #nextStep .line2 {
+    display: block; 
+  }
+
+  .button-style { 
+    background-color: #7500c0;;
+    color: #fff;
+    font-size: 1em;
+    padding: 0.5em 1em; 
+    border: none;
+    border-radius: 5px; 
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none; 
+}
+
+.button-style:hover {
+    background-color: #7500c0;;
+}
+
+#endDemoButton {
+    position: fixed; 
+    top: 20px;
+    right: 20px;
+    background-color: #e6e6dc;
+    color: #96968c; 
+  } 
+
+#endDemoButton:hover {
+    background-color: #e6e6dc; 
+  }  
+
+
+/* #arrowsContainer {
+    width: 200px;  
+    height: 200px; 
+    background-image: url(img/arrows.png); 
+    background-size: contain; 
+    background-repeat: no-repeat;
+    position: relative; 
+  }
+
+  #recordingMessage {
+    color:#000000;
+    font-size: 2.5em; 
+    display: block; 
+    margin-top: 2em;
+  } */
